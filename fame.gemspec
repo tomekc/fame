@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["alexander@schuch.me"]
   spec.summary       = %q{Delightful localization of .storyboard and .xib files, right within Interface Builder.}
   spec.description   = %q{Delightful localization of .storyboard and .xib files, right within Interface Builder. Fame makes it easy to enable specific Interface Builder elements to be translated and exported to localizable .strings files.}
-  spec.homepage      = "https://twitter.com/schuchalexander"
+  spec.homepage      = "https://github.com/aschuch/fame"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w{ bin/fame README.md LICENSE }
