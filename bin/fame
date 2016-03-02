@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.push File.expand_path('../../lib', __FILE__)
+
+require 'rubygems'
+require 'commander'
+require 'colorize'
+require 'fame/version'
+require 'fame/interface_builder'
+
+#
+# The Fame CLI
+#
+class FameApplication
+  include Commander::Methods
+
+  def run
+    program :name, 'Fame'
+    program :version, Fame::VERSION
+    program :description, 'Replace identifiers within Apple Interface Builder files to use nice keys and descriptions for localization.'
+    default_command :localize
+
+    #
+    # Default localize command
+    #
+    command :localize do |c|
+      c.syntax = 'fame localize [options]'
+      c.description = 'Replaces generated identifiers of the given Interface Builder file(s) and generates .strings files.'
+      c.option '--path STRING', String, 'Path to an interface builder file or a folder that contains interface builder files.'
+
+      c.action do |args, options|
+        options.default :path => '.'
+
+        files = Fame::InterfaceBuilder.determine_ib_files!(options.path)
+        puts "\nFound #{files.count} files to localize.\n".light_black
+
+      	# Generate localizable strings for each file
+      	files.each_with_index do |f, index|
+          puts "(#{index+1}/#{files.count}) #{f}".light_blue
+
+      		ib = Fame::InterfaceBuilder.new
+
+      		# Generate new localizable.strings file
+      		strings = ib.generate_localizable_strings(f)
+
+          if strings.empty?
+      		  puts "✔".green + " (no strings to localize)︎".yellow
+          else
+            FileUtils.mkdir_p(strings_folder(f))
+            File.write(strings_file_path(f), strings)
+
+            puts "✔︎".green + " Generated strings file at #{strings_file_path(f)}".black
+          end
+
+          puts "-----------------------------------------------------\n".light_black
+      	end
+      end
+    end
+
+    run!
+  end
+
+  private
+
+  def strings_folder(path)
+    folder = File.dirname(path)
+    File.join(folder, "..", "en.lproj")
+  end
+
+  def strings_file_path(path)
+    file_name = File.basename(path, File.extname(path))
+    file = File.join(strings_folder(path), "#{file_name}.strings")
+    File.expand_path(file)
+  end
+
+end
+
+# run application
+FameApplication.new.run

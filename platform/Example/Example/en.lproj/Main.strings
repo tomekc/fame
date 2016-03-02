@@ -1,0 +1,29 @@
+/* FirstViewController label text: A fancy Label */
+"R52-bk-905.text" = "Label";
+
+/* FirstViewController button normalTitle: An awesome Button */
+"JOe-j0-s5G.normalTitle" = "Button";
+
+/* FirstViewController textField placeholder: A gorgeous TextField */
+"gwT-Xy-34b.placeholder" = "Placeholder Text";
+
+/* FirstViewController textField text: A gorgeous TextField */
+"gwT-Xy-34b.text" = "Text";
+
+/* FirstViewController segmentedControl segmentTitles[0]: An outstanding SegmentedControl */
+"l0d-C1-RK1.segmentTitles[0]" = "First";
+
+/* FirstViewController navigationItem title: An uber NavigationItem */
+"4Bk-Mt-SxL.title" = "First ViewController";
+
+/* FirstViewController barButtonItem title: An unbelievable BarButtonItem */
+"lFA-pn-E9n.title" = "BarButtonItem";
+
+/* FirstViewController segmentedControl segmentTitles[1]: An outstanding SegmentedControl */
+"l0d-C1-RK1.segmentTitles[1]" = "Second";
+
+/* SecondViewController label text: A fancy label in a second view controller */
+"uHO-0u-WyN.text" = "Second view controller label";
+
+/* SecondViewController navigationItem title: Second navigation item */
+"SAx-7C-11b.title" = "Second ViewController";
