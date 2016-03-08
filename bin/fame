@@ -7,6 +7,7 @@ require 'commander'
 require 'colorize'
 require 'fame/version'
 require 'fame/interface_builder'
+require 'fame/XLIFF'
 
 #
 # The Fame CLI
@@ -32,46 +33,32 @@ class FameApplication
         options.default :path => '.'
 
         files = Fame::InterfaceBuilder.determine_ib_files!(options.path)
-        puts "\nFound #{files.count} files to localize.\n".light_black
 
-      	# Generate localizable strings for each file
+        # Generate XLIFF translation files
+        language = 'en'
+        xliff = Fame::XLIFF.new
+        xliff.generate(language)
+
+        ib_nodes = []
+
+        puts "Collecting Interface Builder information for #{files.count} files".blue
+
+      	# Collect IB nodes for each file
       	files.each_with_index do |f, index|
-          puts "(#{index+1}/#{files.count}) #{f}".light_blue
-
+          puts "  ✔︎ ".green + "(#{index+1}/#{files.count}) #{f}".black
       		ib = Fame::InterfaceBuilder.new
-
-      		# Generate new localizable.strings file
-      		strings = ib.generate_localizable_strings(f)
-
-          if strings.empty?
-      		  puts "✔".green + " (no strings to localize)︎".yellow
-          else
-            FileUtils.mkdir_p(strings_folder(f))
-            File.write(strings_file_path(f), strings)
-
-            puts "✔︎".green + " Generated strings file at #{strings_file_path(f)}".black
-          end
-
-          puts "-----------------------------------------------------\n".light_black
+          ib_nodes += ib.nodes(f)
       	end
+
+        puts "Updating translation units".blue
+        xliff.update_trans_units(language, ib_nodes)
+
       end
     end
 
     run!
   end
 
-  private
-
-  def strings_folder(path)
-    folder = File.dirname(path)
-    File.join(folder, "..", "en.lproj")
-  end
-
-  def strings_file_path(path)
-    file_name = File.basename(path, File.extname(path))
-    file = File.join(strings_folder(path), "#{file_name}.strings")
-    File.expand_path(file)
-  end
 
 end
 

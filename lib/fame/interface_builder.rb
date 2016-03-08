@@ -30,39 +30,6 @@ module Fame
 		end
 
 		#
-		# Generates a .strings file for the Interface Builder file at the given path.
-		# The output only contains elements where localization has been enabled.
-		#
-		def generate_localizable_strings(file)
-			localizable_strings_entries(file)
-				.sort_by! { |e| e.node.vc_name }
-				.map(&:formatted_strings_file_entry)
-				.join("\n\n")
-		end
-
-		private
-
-		#
-		# Generates ibtool output in plist format
-		#
-		def ibtool(file)
-			# 	<dict>
-			# 		<key>6lc-A3-0nG</key>
-			# 		<dict>
-			# 			<key>text</key>
-			# 			<string>Empty localization ID</string>
-			# 		</dict>
-			# 		...
-			# 	</dict>
-			output = `xcrun ibtool #{file} --localizable-strings --localizable-stringarrays`
-			plist = Plist::parse_xml(output)
-			strings = plist['com.apple.ibtool.document.localizable-strings']
-			string_arrays = plist['com.apple.ibtool.document.localizable-stringarrays']
-
-			[strings, string_arrays]
-		end
-
-		#
 		# Returns all XML nodes with a custom localization ID
 		#
 		def nodes(file)
@@ -85,54 +52,6 @@ module Fame
 
 				LocalizedNode.new(node, original_id, vc_name, element_name, i18n_enabled, i18n_comment)
 			end
-		end
-
-		#
-		# Returns the localizable strings entries for a given
-		# Interface Builder file.
-		#
-		def localizable_strings_entries(file)
-			# Generate ibtool output
-			strings, string_arrays = ibtool(file)
-
-			# Get nodes for current file
-			nodes = nodes(file)
-
-			# Generate new strings file
-			entries = []
-			nodes.each do |node|
-				next unless node.i18n_enabled
-				unless element = strings[node.original_id] || string_arrays[node.original_id]
-					puts "  ✘ #{node.original_id} (#{node.element_name}): #{node.original_id} not found in ibtool output".red
-					next
-				end
-
-				# A localization may contain more than one element.
-				# e.g. a UITextField has a `text` and a `placeholdertext` localization
-				element.each do |property, value|
-					next if property == "ibExternalUserDefinedRuntimeAttributesLocalizableStrings"
-
-					if value.is_a?(Array)
-						# The localization contains an array of values, e.g. when localizing a UISegmentedControl
-						value.each_with_index do |v, index|
-							p = "#{property}[#{index}]"
-							entry = LocalizableStringsEntry.new(node, p, v)
-							entries << entry
-
-							puts "  ✔︎ #{entry.formatted_info}".green
-						end
-					else
-						# The localization only contains a single value
-						entry = LocalizableStringsEntry.new(node, property, value)
-						entries << entry
-
-						puts "  ✔︎ #{entry.formatted_info}".green
-					end
-
-				end
-			end
-
-			entries
 		end
 
 	end
