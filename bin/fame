@@ -19,39 +19,40 @@ class FameApplication
     program :name, 'Fame'
     program :version, Fame::VERSION
     program :description, 'Replace identifiers within Apple Interface Builder files to use nice keys and descriptions for localization.'
-    default_command :localize
+    default_command :export
 
     #
     # Default localize command
     #
-    command :localize do |c|
-      c.syntax = 'fame localize [options]'
+    command :export do |c|
+      c.syntax = 'fame export [options] project.xcode.project'
       c.description = 'Replaces generated identifiers of the given Interface Builder file(s) and generates .strings files.'
       c.option '--path STRING', String, 'Path to an interface builder file or a folder that contains interface builder files.'
 
       c.action do |args, options|
         options.default :path => '.'
 
+        raise "Provide a project file" unless args.count == 1
+
+        project = args.first
+        raise "The provided project file '#{project}' doesn't exist" unless File.exists?(project)
+
         files = Fame::InterfaceBuilder.determine_ib_files!(options.path)
 
         # Generate XLIFF translation files
-        language = 'en'
         xliff = Fame::XLIFF.new
-        xliff.generate(language)
-
-        ib_nodes = []
-
-        puts "Collecting Interface Builder information for #{files.count} files".blue
+        xliff.generate(project)
 
       	# Collect IB nodes for each file
+        puts "Collecting Interface Builder information for #{files.count} files".blue
+        ib_nodes = []
       	files.each_with_index do |f, index|
           puts "  ✔︎ ".green + "(#{index+1}/#{files.count}) #{f}".black
       		ib = Fame::InterfaceBuilder.new
           ib_nodes += ib.nodes(f)
       	end
 
-        puts "Updating translation units".blue
-        xliff.update_trans_units(language, ib_nodes)
+        xliff.update_trans_units(project, ib_nodes)
 
       end
     end
