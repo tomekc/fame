@@ -113,10 +113,30 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="i18n_comment" value="A fancy label in a second view controller"/>
                                 </userDefinedRuntimeAttributes>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dynamic label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pgq-eq-Uvk">
+                                <rect key="frame" x="193" y="319" width="108" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="i18n_enabled" value="NO"/>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="i18n_comment" value="NOT USED"/>
+                                </userDefinedRuntimeAttributes>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dynamic label 2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="si2-WH-Hr5">
+                                <rect key="frame" x="193" y="348" width="122" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="Pgq-eq-Uvk" firstAttribute="leading" secondItem="uHO-0u-WyN" secondAttribute="leading" id="56w-Ju-wm3"/>
                             <constraint firstItem="uHO-0u-WyN" firstAttribute="centerX" secondItem="9gE-Sr-IFg" secondAttribute="centerX" id="N11-l9-3Pc"/>
+                            <constraint firstItem="si2-WH-Hr5" firstAttribute="top" secondItem="Pgq-eq-Uvk" secondAttribute="bottom" constant="8" id="ZUv-mc-eYW"/>
+                            <constraint firstItem="si2-WH-Hr5" firstAttribute="leading" secondItem="Pgq-eq-Uvk" secondAttribute="leading" id="mww-zp-HfO"/>
+                            <constraint firstItem="Pgq-eq-Uvk" firstAttribute="top" secondItem="uHO-0u-WyN" secondAttribute="bottom" constant="8" id="o7i-Jk-fJf"/>
                             <constraint firstItem="uHO-0u-WyN" firstAttribute="centerY" secondItem="9gE-Sr-IFg" secondAttribute="centerY" id="sPC-UF-SAa"/>
                         </constraints>
                     </view>
@@ -126,6 +146,10 @@
                             <userDefinedRuntimeAttribute type="string" keyPath="i18n_comment" value="Second navigation item"/>
                         </userDefinedRuntimeAttributes>
                     </navigationItem>
+                    <connections>
+                        <outlet property="dynamicLabel" destination="Pgq-eq-Uvk" id="klR-FC-fW9"/>
+                        <outlet property="dynamicLabel2" destination="si2-WH-Hr5" id="GGk-jb-g1l"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CUb-bi-rYQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

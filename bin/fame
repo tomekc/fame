@@ -7,6 +7,7 @@ require 'commander'
 require 'colorize'
 require 'fame/version'
 require 'fame/interface_builder'
+require 'fame/XLIFF'
 
 #
 # The Fame CLI
@@ -17,62 +18,43 @@ class FameApplication
   def run
     program :name, 'Fame'
     program :version, Fame::VERSION
-    program :description, 'Replace identifiers within Apple Interface Builder files to use nice keys and descriptions for localization.'
-    default_command :localize
+    program :description, 'Delightful localization of .storyboard and .xib files, right within Interface Builder. The fame CLI exports .xliff files based on the settings provided in Interface Builder files.'
+    default_command :export
 
     #
-    # Default localize command
+    # Export
     #
-    command :localize do |c|
-      c.syntax = 'fame localize [options]'
-      c.description = 'Replaces generated identifiers of the given Interface Builder file(s) and generates .strings files.'
-      c.option '--path STRING', String, 'Path to an interface builder file or a folder that contains interface builder files.'
+    command :export do |c|
+      c.syntax = 'fame export --project /path/to/xcodeproj [options]'
+      c.description = 'Exports all .xliff files for the current Xcode project based on the settings provided in the Interface Builder files (via Fame.swift).'
+      c.option '--project STRING', String, 'Path to an Xcode project that should be localized'
+      c.option '--ib-file-path STRING', String, 'Path to an interface builder file or a folder that contains interface builder files that should be localized.'
+      c.option '--output-path STRING', String, 'Path to a folder where exported .xliff files should be placed.'
 
       c.action do |args, options|
-        options.default :path => '.'
+        options.default :ib_file_path => '.'
+        options.default :output_path => '.'
 
-        files = Fame::InterfaceBuilder.determine_ib_files!(options.path)
-        puts "\nFound #{files.count} files to localize.\n".light_black
+        raise "Please provide a project file to localize" unless options.project
+        raise "The provided project file '#{project}' doesn't exist" unless File.exists?(options.project)
 
-      	# Generate localizable strings for each file
-      	files.each_with_index do |f, index|
-          puts "(#{index+1}/#{files.count}) #{f}".light_blue
+        ib_files = Fame::InterfaceBuilder.determine_ib_files!(options.ib_file_path)
+        puts "Found #{ib_files.count} file(s) to localize".light_black
 
-      		ib = Fame::InterfaceBuilder.new
+        # Collect IB nodes for each file
+        ib_nodes = ib_files.inject([]) do |all, file|
+          ib = Fame::InterfaceBuilder.new(file)
+          all + ib.nodes
+        end
 
-      		# Generate new localizable.strings file
-      		strings = ib.generate_localizable_strings(f)
-
-          if strings.empty?
-      		  puts "✔".green + " (no strings to localize)︎".yellow
-          else
-            FileUtils.mkdir_p(strings_folder(f))
-            File.write(strings_file_path(f), strings)
-
-            puts "✔︎".green + " Generated strings file at #{strings_file_path(f)}".black
-          end
-
-          puts "-----------------------------------------------------\n".light_black
-      	end
+        # Generate XLIFF translation files
+        xliff = Fame::XLIFF.new(options.project)
+        xliff.export(options.output_path, ib_nodes)
       end
     end
 
     run!
   end
-
-  private
-
-  def strings_folder(path)
-    folder = File.dirname(path)
-    File.join(folder, "..", "en.lproj")
-  end
-
-  def strings_file_path(path)
-    file_name = File.basename(path, File.extname(path))
-    file = File.join(strings_folder(path), "#{file_name}.strings")
-    File.expand_path(file)
-  end
-
 end
 
 # run application
