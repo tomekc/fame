@@ -4,7 +4,6 @@ require 'colorize'		# colorful console output
 require_relative 'models'
 
 module Fame
-
 	class InterfaceBuilder
 		# Keypaths to custom runtime attributes (provided by iOS Extenstion, see Fame.swift)
 		LOCALIZATION_ENABLED_KEYPATH = "i18n_enabled".freeze
@@ -14,27 +13,22 @@ module Fame
 		ACCEPTED_FILE_TYPES = [".storyboard", ".xib"].freeze
 
 		#
-		# Initialization
+		# Initializer
+		# @param ib_path The path to an Interface Builder file that should be localized.
 		#
-		def self.determine_ib_files!(path = ".")
-			raise "The provided file or folder does not exist" unless File.exist? path
-
-			if File.directory?(path)
-				files = Dir.glob(path + "/**/*{#{ACCEPTED_FILE_TYPES.join(',')}}")
-				raise "The provided folder did not contain any interface files (#{ACCEPTED_FILE_TYPES.join(', ')})" unless files.count > 0
-				return files
-			else
-				raise "The provided file is not an interface file (#{ACCEPTED_FILE_TYPES.join(', ')})" unless ACCEPTED_FILE_TYPES.include? File.extname(path)
-				return [path]
-			end
+		def initialize(ib_path)
+			@ib_path = ib_path
 		end
 
 		#
-		# Returns all XML nodes with a custom localization ID
+		# Searches the current Interface Builder file for XML nodes that should be localized.
+		# Localization is only enabled if explicitly set via the fame Interface Builder integration (see Fame.swift file).
+		# @return [Array<LocalizedNode>] An array of LocalizedNode objects that represent the localizable elements of the given Interface Builder file
 		#
-		def nodes(file)
-			storyboard = File.open(file)
-			doc = Nokogiri::XML(storyboard)
+		def nodes
+			ib_file = File.open(@ib_path)
+			doc = Nokogiri::XML(ib_file)
+			ib_file.close
 
 			# Grab raw nokogiri nodes that have a localization keypath
 			raw_nodes = doc.xpath("//userDefinedRuntimeAttribute[@keyPath='#{LOCALIZATION_ENABLED_KEYPATH}']")
@@ -51,6 +45,24 @@ module Fame
 				i18n_comment = node.parent.xpath("userDefinedRuntimeAttribute[@keyPath='#{LOCALIZATION_COMMENT_KEYPATH}']").attr('value').value rescue nil
 
 				LocalizedNode.new(node, original_id, vc_name, element_name, i18n_enabled, i18n_comment)
+			end
+		end
+
+		#
+		# Searches the given path for Interface Builder files (.storyboard & .xib) and returns their paths.
+		# @param path The path that should be searched for Interface Builder files, defaults to the current path.
+		# @return [Array<String>] An array of paths to Interface Builder files.
+		#
+		def self.determine_ib_files!(path = ".")
+			raise "The provided file or folder does not exist" unless File.exist? path
+
+			if File.directory?(path)
+				files = Dir.glob(path + "/**/*{#{ACCEPTED_FILE_TYPES.join(',')}}")
+				raise "The provided folder did not contain any interface files (#{ACCEPTED_FILE_TYPES.join(', ')})" unless files.count > 0
+				return files
+			else
+				raise "The provided file is not an interface file (#{ACCEPTED_FILE_TYPES.join(', ')})" unless ACCEPTED_FILE_TYPES.include? File.extname(path)
+				return [path]
 			end
 		end
 

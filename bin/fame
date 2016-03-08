@@ -27,40 +27,31 @@ class FameApplication
     command :export do |c|
       c.syntax = 'fame export [options] project.xcode.project'
       c.description = 'Replaces generated identifiers of the given Interface Builder file(s) and generates .strings files.'
+      c.option '--project STRING', String, 'Path to an interface builder file or a folder that contains interface builder files.'
       c.option '--path STRING', String, 'Path to an interface builder file or a folder that contains interface builder files.'
 
       c.action do |args, options|
         options.default :path => '.'
+        raise "Please provide a project file to localize" unless options.project
+        raise "The provided project file '#{project}' doesn't exist" unless File.exists?(options.project)
 
-        raise "Provide a project file" unless args.count == 1
+        ib_files = Fame::InterfaceBuilder.determine_ib_files!(options.path)
+        puts "Found #{ib_files} to localize".light_black
 
-        project = args.first
-        raise "The provided project file '#{project}' doesn't exist" unless File.exists?(project)
-
-        files = Fame::InterfaceBuilder.determine_ib_files!(options.path)
+        # Collect IB nodes for each file
+        ib_nodes = ib_files.inject do |all, file|
+          ib = Fame::InterfaceBuilder.new(f)
+          all + ib.nodes
+        end
 
         # Generate XLIFF translation files
-        xliff = Fame::XLIFF.new
-        xliff.generate(project)
-
-      	# Collect IB nodes for each file
-        puts "Collecting Interface Builder information for #{files.count} files".blue
-        ib_nodes = []
-      	files.each_with_index do |f, index|
-          puts "  ✔︎ ".green + "(#{index+1}/#{files.count}) #{f}".black
-      		ib = Fame::InterfaceBuilder.new
-          ib_nodes += ib.nodes(f)
-      	end
-
-        xliff.update_trans_units(project, ib_nodes)
-
+        xliff = Fame::XLIFF.new(options.project)
+        xliff.export(options.path, ib_nodes)
       end
     end
 
     run!
   end
-
-
 end
 
 # run application
