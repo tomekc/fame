@@ -1,6 +1,5 @@
-
 module Fame
-  
+
   # nokogiri_node = original nokogiri node
   # original_id = F4z-Kg-ni6
   # vc_name = CustomViewController (optional)
