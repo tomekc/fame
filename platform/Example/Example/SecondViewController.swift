@@ -16,8 +16,8 @@ class SecondViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        dynamicLabel?.text = NSLocalizedString("secondViewController.dynamicLabel.text", value: "First Dynamic Label Text",comment: "First dynamic text, should be short")
-        dynamicLabel?.text = NSLocalizedString("secondViewController.dynamicLabel2.text", value: "Second Dynamic Label Text",comment: "Second dynamic text, can be longer")
+        dynamicLabel?.text = NSLocalizedString("secondViewController.dynamicLabel.text", value: "First Dynamic Label Text", comment: "First dynamic text, should be short")
+        dynamicLabel2?.text = NSLocalizedString("secondViewController.dynamicLabel2.text", value: "Second Dynamic Label Text", comment: "Second dynamic text, can be longer")
     }
 
     override func didReceiveMemoryWarning() {
