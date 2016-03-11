@@ -36,7 +36,7 @@ Storyboard and XIB files usually contain a mixed set of elements with *static* o
 * **Static text**: Elements with fixed localization strings that will never change at runtime
 * **Dynamic text**: Elements that will change their localized text during runtime. For example a label that is populated with data from an API or a status label that is populated using `NSLocalizedString` at runtime.
 
-![Example of static vs. dynamic (TableViewCell)]()
+<!-- ![Example of static vs. dynamic (TableViewCell)]() -->
 
 **Static text elements should be localized, dynamic text elements should be ignored during translation.**
 
