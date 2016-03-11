@@ -6,7 +6,9 @@ Fame makes it exceptionally easy to enable _specific_ UI elements to be translat
 -----
 
 <p align="center">
+
 [Introduction](#introduction) • [Fame Features](#fame-features) • [Installation](#installation) • [Usage](#usage)
+
 </p>
 
 -----
