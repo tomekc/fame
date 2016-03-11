@@ -5,7 +5,7 @@ Fame makes it exceptionally easy to enable _specific_ UI elements to be translat
 
 -----
 
-[Introduction]() • [Fame Features]() • [Installation]() • [Usage]()
+<center> [Introduction](#introduction) • [Fame Features](#fame-features) • [Installation](#installation) • [Usage](#usage) </center>
 
 -----
 
