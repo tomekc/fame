@@ -50,10 +50,10 @@ module Fame
 
     #
     # Searches the given path for Interface Builder files (.storyboard & .xib) and returns their paths.
-    # @param path The path that should be searched for Interface Builder files, defaults to the current path.
+    # @param path The path that should be searched for Interface Builder files.
     # @return [Array<String>] An array of paths to Interface Builder files.
     #
-    def self.determine_ib_files!(path = ".")
+    def self.determine_ib_files!(path)
       raise "The provided file or folder does not exist" unless File.exist? path
 
       if File.directory?(path)

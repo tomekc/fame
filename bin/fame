@@ -7,7 +7,7 @@ require 'commander'
 require 'colorize'
 require 'fame/version'
 require 'fame/interface_builder'
-require 'fame/XLIFF'
+require 'fame/xliff_export'
 
 #
 # The Fame CLI
@@ -35,9 +35,6 @@ class FameApplication
         options.default :ib_file_path => '.'
         options.default :output_path => '.'
 
-        raise "Please provide a project file to localize" unless options.project
-        raise "The provided project file '#{project}' doesn't exist" unless File.exists?(options.project)
-
         ib_files = Fame::InterfaceBuilder.determine_ib_files!(options.ib_file_path)
         puts "Found #{ib_files.count} file(s) to localize".light_black
 
@@ -48,7 +45,7 @@ class FameApplication
         end
 
         # Generate XLIFF translation files
-        xliff = Fame::XLIFF.new(options.project)
+        xliff = Fame::XliffExport.new(options.project)
         xliff.export(options.output_path, ib_nodes)
       end
     end

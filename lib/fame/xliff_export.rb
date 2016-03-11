@@ -1,23 +1,19 @@
 require 'nokogiri'		# to rewrite the XLIFF file
 require 'colorize'		# colorful console output
-require 'digest/sha1'
 require_relative 'models'
 require_relative 'xcode_project'
 
 module Fame
   # Handles import and export of .xliff files
-  class XLIFF
+  class XliffExport
 
+    #
+    # Initializer
+    # @param xcode_proj_path A path to a .xcodeproj file whose contents should be localized.
+    #
     def initialize(xcode_proj_path)
       @xcode_proj = XcodeProject.new(xcode_proj_path)
     end
-
-    #
-    # Imports all .xliff files at the given path into the current Xcode project
-    # @param path A folder of .xliff files that should be imported into the current Xcode project.
-    #
-    # def import(path)
-    # end
 
     #
     # Exports all .xliff files for the current Xcode project
