@@ -9,7 +9,7 @@ Fame makes it exceptionally easy to enable _specific_ UI elements to be translat
   <a href="#introduction">Introduction</a> &bull;
   <a href="#fame-features">Fame Features</a> &bull;
   <a href="#installation">Installation</a> &bull;
-  <a href="#usage">Usage</a> &bull;
+  <a href="#usage">Usage</a>
 </p>
 
 -----
