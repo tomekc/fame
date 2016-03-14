@@ -37,6 +37,7 @@ module Fame
     # Validates the xcodeproj path
     #
     def validate_xcodeproj_path!
+      raise "[XcodeProject] No project file provided" unless @xcode_proj_path
       raise "[XcodeProject] The provided file does not exist" unless File.exist? @xcode_proj_path
       raise "[XcodeProject] The provided file is not a valid Xcode project (#{ACCEPTED_FILE_TYPES.join(', ')})" unless ACCEPTED_FILE_TYPES.include? File.extname(@xcode_proj_path)
     end
