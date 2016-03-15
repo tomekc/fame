@@ -70,7 +70,7 @@ Fame makes it easy for developers to specify which elements of your Storyboard a
 
 #### Command Line Interface
 
-Using the fame CLI, developers can export .xliff files that only contain localizations for elements previously enabled in Interface Builder.
+Using the fame CLI, developers can export .xliff files that only contain localizations for elements previously enabled in Interface Builder. After all files have been translated, the CLI makes it super easy to batch-import the .xliff files back into Xcode.
 
 ![fame CLI](docs/terminal.gif)
 
@@ -122,6 +122,8 @@ You can now enable localization for each element you want to have translated.
 
 ## Usage
 
+### Export
+
 Once all localizable elements have been configured in Interface Builder, you can export the localizable .xliff file using the `fame` command line tool.
 
 First, make sure to commit all local changes, just to be safe. Then open terminal, navigate to the root folder of your project and run
@@ -130,7 +132,7 @@ First, make sure to commit all local changes, just to be safe. Then open termina
 $ fame --project Example.xcodeproj [--ib-file-path] [--output-path]
 ```
 
-In a nutshell, the fame command does the following:
+In a nutshell, the `fame export` command does the following:
 
 * Analyze the given Xcode project file for supported languages
 * Find all .storyboard and .xib files in the `--ib-file-path` (recursively, you may pass a file or folder, defaults to the current directory)
@@ -140,7 +142,25 @@ In a nutshell, the fame command does the following:
 * Update the generated .xliff with useful comments
 * Save the clean .xliff files to `--output-path` (defaults to the current directory)
 
-Enjoy 🍉
+Enjoy a little snack 🍉
+
+### Import
+
+To import one or more .xliff files back into Xcode, run
+
+```bash
+$ fame import --project Example.xcodeproj [--xliff-path]
+```
+
+> Note: The very first import may fail due to limitations in `xcodebuild`, fame will
+> handle the failure gracefully and provide instructions to circumvent this issue.
+
+In a nutshell, the `fame import` command does the following:
+
+* Find all .xliff files in the `--xliff-path` (defaults to the current directory)
+* Import all found .xliff files using Apple's `xcodebuild`
+
+Enjoy your favorite hot beverage ☕️
 
 ## Contributing
 
