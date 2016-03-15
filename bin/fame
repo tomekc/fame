@@ -7,6 +7,7 @@ require 'commander'
 require 'colorize'
 require 'fame/version'
 require 'fame/interface_builder'
+require 'fame/xliff_import'
 require 'fame/xliff_export'
 
 #
@@ -20,6 +21,24 @@ class FameApplication
     program :version, Fame::VERSION
     program :description, 'Delightful localization of .storyboard and .xib files, right within Interface Builder. The fame CLI exports .xliff files based on the settings provided in Interface Builder files.'
     default_command :export
+
+    #
+    # Import
+    #
+    command :import do |c|
+      c.syntax = 'fame import --project /path/to/xcodeproj [options]'
+      c.description = 'Imports all given .xliff files into the given Xcode project.'
+      c.option '--project STRING', String, 'Path to an Xcode project that should be localized'
+      c.option '--xliff-path STRING', String, 'Path to an .xliff file or a folder that contains .xliff files to be imported.'
+
+      c.action do |args, options|
+        options.default :xliff_path => '.'
+
+        # Import .xliff files
+        xliff = Fame::XliffImport.new(options.project)
+        xliff.import(options.xliff_path)
+      end
+    end
 
     #
     # Export
