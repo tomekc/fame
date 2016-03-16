@@ -33,16 +33,17 @@ module Fame
         # may result in the following error:
         # xcodebuild: error: Importing localizations from en.xliff will make changes to Example. Import with xcodebuild can only modify existing strings files.
         command = "xcodebuild -importLocalizations -localizationPath \"#{xliff}\" -project \"#{@xcode_proj.xcode_proj_path}\""
-        _, stdout, stderr = Open3.capture3(command)
+        stdout, stderr, status = Open3.capture3(command)
 
-        puts stdout.light_black
-        if stderr
+        if status.success?
+          puts stdout.light_black
+          puts "✔︎ Successfully imported #{language}".green
+        else
+          puts stderr.light_black
           puts "✘ Failed to import #{language}".red
           # grep the error specific to the initial import issue of xcodebuild
           error = stdout.split("\n").grep(/^xcodebuild: error: Importing localizations/i)
           errors << error
-        else
-          puts "✔︎ Successfully imported #{language}".green
         end
       end
 

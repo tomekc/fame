@@ -43,13 +43,10 @@ module Fame
         .join(" ")
 
       command = "xcodebuild -exportLocalizations -localizationPath \"#{path}\" -project \"#{@xcode_proj.xcode_proj_path}\" #{languages}"
-      
-      stdin, stdout, stderr = Open3.capture3(command)
-      if stderr
-        puts(command.blue)
-        puts(stdout.light_black)
-        puts(stderr.to_s.yellow)
-      end
+      stdout, stderr, status = Open3.capture3(command)
+
+      puts stdout.light_black
+      puts(stderr.yellow) unless status.success?
     end
 
     #
