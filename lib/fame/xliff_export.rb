@@ -41,7 +41,12 @@ module Fame
         .map { |l| "-exportLanguage #{l}" }
         .join(" ")
 
-      `xcodebuild -exportLocalizations -localizationPath #{path} -project #{@xcode_proj.xcode_proj_path} #{languages}`
+      command = "xcodebuild -exportLocalizations -localizationPath \"#{path}\" -project \"#{@xcode_proj.xcode_proj_path}\" #{languages}"
+      stdin, stdout, stderr = Open3.capture3(command)
+      if stderr
+        puts(stdout)
+        puts(stderr)
+      end
     end
 
     #
