@@ -1,5 +1,6 @@
 require 'nokogiri'		# to rewrite the XLIFF file
 require 'colorize'		# colorful console output
+require 'open3'       # to capture stdout, stderr when calling external xcodebuild
 require_relative 'models'
 require_relative 'xcode_project'
 
@@ -41,7 +42,14 @@ module Fame
         .map { |l| "-exportLanguage #{l}" }
         .join(" ")
 
-      `xcodebuild -exportLocalizations -localizationPath #{path} -project #{@xcode_proj.xcode_proj_path} #{languages}`
+      command = "xcodebuild -exportLocalizations -localizationPath \"#{path}\" -project \"#{@xcode_proj.xcode_proj_path}\" #{languages}"
+      
+      stdin, stdout, stderr = Open3.capture3(command)
+      if stderr
+        puts(command.blue)
+        puts(stdout.light_black)
+        puts(stderr.to_s.yellow)
+      end
     end
 
     #
