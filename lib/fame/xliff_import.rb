@@ -1,5 +1,7 @@
-require 'colorize'		# colorful console output
+require 'colorize'    # colorful console output
+require 'open3'       # capture stdout, stderr for commandline calls
 require_relative 'xcode_project'
+
 
 module Fame
   # Handles import and export of .xliff files
@@ -26,13 +28,22 @@ module Fame
       errors = []
       xliffs.each_with_index do |xliff, index|
         language =  File.basename(xliff, '.*')
-        puts "(#{index+1}/#{xliffs.count}) [#{language}] Importing #{xliff}".blue
+        puts "\n(#{index+1}/#{xliffs.count}) [#{language}] Importing #{xliff}".blue
 
         # may result in the following error:
         # xcodebuild: error: Importing localizations from en.xliff will make changes to Example. Import with xcodebuild can only modify existing strings files.
-        output = `xcodebuild -importLocalizations -localizationPath #{xliff} -project #{@xcode_proj.xcode_proj_path} 2>&1`
-        error = output.split("\n").grep(/^xcodebuild: error: Importing localizations/i)
-        errors << error
+        command = "xcodebuild -importLocalizations -localizationPath \"#{xliff}\" -project \"#{@xcode_proj.xcode_proj_path}\""
+        _, stdout, stderr = Open3.capture3(command)
+
+        puts stdout.light_black
+        if stderr
+          puts "✘ Failed to import #{language}".red
+          # grep the error specific to the initial import issue of xcodebuild
+          error = stdout.split("\n").grep(/^xcodebuild: error: Importing localizations/i)
+          errors << error
+        else
+          puts "✔︎ Successfully imported #{language}".green
+        end
       end
 
       report_result(errors)
@@ -64,8 +75,6 @@ module Fame
     def report_result(errors)
       # handle errors
       if errors.count > 0
-        puts "\n✘ XLIFF import failed (#{errors.count} error(s))\n".red
-        puts errors
         help = "\nOoops! xcodebuild cannot import one or more of the provided .xliff file(s) because the necessary .strings files do not exist yet.\n\n" +
               "Here's how to fix it:\n" +
               "  1. Open Xcode, select the project root (blue icon)\n" +
