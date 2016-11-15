@@ -47,6 +47,11 @@ module Fame
         LocalizedNode.new(node, original_id, vc_name, element_name, i18n_enabled, i18n_comment)
       end
 
+      raw_all_labels = doc.xpath("//label")
+      all_labels = raw_all_labels.map do |label|
+        label['id']
+      end
+
       # Grab raw nodes that have outlets (i.e. they are dynamically set in code)
       raw_outlet_nodes = doc.xpath("//outlet")
 
@@ -54,10 +59,10 @@ module Fame
       outlet_nodes = raw_outlet_nodes.map do |node|
         original_id = node['destination']
         i18n_enabled = false
-        LocalizedNode.new(node, original_id, nil, nil, i18n_enabled, nil)
+        LocalizedNode.new(node, original_id, nil, "IBOutlet", i18n_enabled, nil)
       end
 
-      user_defined_nodes + outlet_nodes
+      user_defined_nodes + outlet_nodes.keep_if { |node| all_labels.index(node.original_id) }
     end
 
     #
