@@ -61,6 +61,16 @@ module Fame
         raise "File #{xliff_path} does not exist" unless File.exists? xliff_path
         doc = read_xliff_file(xliff_path)
 
+        # Remove plist files
+        trans_files = doc.xpath('//xmlns:file')
+        trans_files.select do |f|
+          original = f["original"] rescue ""
+          if original.include?(".plist") || original.include?("Tests")
+            f.remove
+            puts "Removed plist file #{original} from translation"
+          end
+        end
+
         # Extract all translation units from the xliff
         trans_units = doc.xpath('//xmlns:trans-unit')
 
